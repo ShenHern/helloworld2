@@ -7,7 +7,11 @@ class QuickStart {
         
         for (int i = 0; i < 12; i++){
             mynumber++;
-            System.out.println(mynumber + "\n");
+            if(mynumber == 12){
+                System.out.println("This number is 12ish");
+                break;
+            }
+            System.out.println(mynumber);
         }
     }
 }

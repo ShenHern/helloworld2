@@ -1,7 +1,6 @@
 class QuickStart {
     public static void main (String[] args) {
-        Animal a = new Animal();
-        String noise = a.bark();
+        String noise = Animal.bark();
         System.out.println(noise);
 
         int mynumber = 0;

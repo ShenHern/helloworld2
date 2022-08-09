@@ -1,23 +1,10 @@
 package lib;
 import java.util.Scanner;
 
-//Attack class to be used in Pokemon classes
-class Attack{
-    final int power;
-    final String name;
-    final String type;
-
-    public Attack(int power, String name, String type){
-        this.power = power;
-        this.name = name;
-        this.type = type;
-    }
-}
-
 abstract class Pokemon{
     //attribute
     private final String[] types = new String[2];
-    private final Attack[] attack_list = new Attack[4];
+    private Attack[] attack_list;
 
     //method used to set pokemon type during initialization of subclasses
     protected void setType(String type1, String type2) {
@@ -36,6 +23,7 @@ abstract class Pokemon{
      * result: this.attack_list [Attack(), Attack(), Attack(), Attack()]
      */
     protected void setAttackList(Attack[] attack_list) {
+        this.attack_list = new Attack[attack_list.length];
         for (int i = 0; i < attack_list.length; i++) {
             this.attack_list[i] = attack_list[i];
         }
@@ -46,7 +34,10 @@ abstract class Pokemon{
      */
     public Attack getAttackUsed(){
         System.out.println("Please enter an attack to use.");
-        System.out.printf("\nMudkip:1. %s 2. %s 3. %s 4. %s\n", this.attack_list[0], this.attack_list[1], this.attack_list[2], this.attack_list[3]);
+        System.out.printf("\nMudkip:\n");
+        for (int i = 0; i < this.attack_list.length; i++){
+            System.out.printf("%d. %s   \n", i+1, this.attack_list[i].name);
+        }
         
         String user_selection;
         Scanner scanin = new Scanner(System.in);
@@ -61,14 +52,5 @@ abstract class Pokemon{
             return this.attack_list[i];
         }
         return null;
-    }
-}
-
-class Mudkip extends Pokemon{
-    public Mudkip(){
-        this.setType("WATER", "\0");
-        Attack watergun = new Attack(6, "Water Gun", "WATER");
-        Attack[] mudkip_attacklist = {watergun};
-        this.setAttackList(mudkip_attacklist);
     }
 }

@@ -3,6 +3,9 @@ package lib;
 public class Mudkip extends Pokemon{
     //constructor
     public Mudkip(){
+        //set pokemon hp
+        this.hp = 60;
+        
         //set pokemon type
         this.setType("WATER", "\0");
 

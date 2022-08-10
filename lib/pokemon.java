@@ -3,6 +3,7 @@ import java.util.Scanner;
 
 abstract class Pokemon{
     //attribute
+    public int hp;
     private final String[] types = new String[2];
     private Attack[] attack_list;
 

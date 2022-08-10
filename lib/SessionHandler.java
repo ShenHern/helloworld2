@@ -9,7 +9,7 @@ public class SessionHandler {
     private Player p1;
     private Player p2;
 
-    /* Constructor to create and initialise two players */
+    /* Method to start running a game session between two players */
     public void RunSessionHandler() { 
         /* creating two players */
         System.out.println("Please enter number of Pokemon to be used in battle:");
@@ -19,22 +19,23 @@ public class SessionHandler {
         int numofPokemonInt = Integer.parseInt(numofPokemonStr);
         
 
-        System.out.println("Please enter the name of player 1:");
+        System.out.println("\nPlease enter the name of player 1:");
         String p1_name = scanin.nextLine();
         
-        System.out.println("Please enter the name of player 2:");
+        System.out.println("\nPlease enter the name of player 2:");
         String p2_name = scanin.nextLine();
         
          
         this.p1 = new Player(numofPokemonInt, p1_name);
         this.p2 = new Player(numofPokemonInt, p2_name);
-        System.out.printf("Player 1 is %s, Player 2 is %s\n", this.p1.getPlayerName(), this.p2.getPlayerName());
+        System.out.printf("\nPlayer 1 is %s, Player 2 is %s\n", this.p1.getPlayerName(), this.p2.getPlayerName());
 
         for (int i = 0; i < numofPokemonInt; i++){
-            System.out.println("Available Pokemon: Mudkip ");
-            System.out.printf("%s please select Pokemon number %d:\n", this.p1.getPlayerName(), i+1);
+            System.out.println("\nAvailable Pokemon: Mudkip ");
+            System.out.printf("\n%s please select Pokemon number %d:\n", this.p1.getPlayerName(), i+1);
             String pokemon_name = scanin.nextLine();
             int added = p1.addPokemonToTeam(pokemon_name, i);
+            //handle invalid pokemon
             if (added == 0){
                 i--;
                 continue;
@@ -42,10 +43,11 @@ public class SessionHandler {
         }
 
         for (int i = 0; i < numofPokemonInt; i++){
-            System.out.println("Available Pokemon: Mudkip ");
-            System.out.printf("%s please select Pokemon number %d:\n", this.p2.getPlayerName(), i+1);
+            System.out.println("\nAvailable Pokemon: Mudkip ");
+            System.out.printf("\n%s please select Pokemon number %d:\n", this.p2.getPlayerName(), i+1);
             String pokemon_name = scanin.nextLine();
             int added = p2.addPokemonToTeam(pokemon_name, i);
+            //handle invalid pokemon
             if (added == 0){
                 i--;
                 continue;
@@ -83,6 +85,7 @@ class Player{
 
     public int addPokemonToTeam(String pokemon_name, int indexof_pokemon){
         Pokemon p = this.createPokemonObj(pokemon_name);
+        //handle unrecognized pokemon
         if (p == null){
             System.out.println("Error in adding Pokemon. Please select Pokemon again.");
             return 0;
@@ -100,5 +103,16 @@ class Player{
             default:
                 return null;
         }
+    }
+}
+
+
+/* BattleArena class that pits two Pokemon against each other*/
+class BattleArena {
+    public Pokemon p1;
+    public Pokemon p2;
+
+    public BattleArena(Pokemon p1, Pokemon p2){
+        
     }
 }

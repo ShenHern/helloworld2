@@ -5,7 +5,8 @@ public class Mudkip extends Pokemon{
     public Mudkip(){
         //set pokemon hp
         this.hp = 60;
-        
+        //set pokemon name
+        this.setName("Mudkip");
         //set pokemon type
         this.setType("WATER", "\0");
 

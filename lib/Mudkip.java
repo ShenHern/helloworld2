@@ -8,11 +8,11 @@ public class Mudkip extends Pokemon{
         //set pokemon name
         this.setName("Mudkip");
         //set pokemon type
-        this.setType("WATER", "\0");
+        this.setType("WATER", "NONE");
 
         //set pokemon attacks
         Attack watergun = new Attack(6, "Water Gun", "WATER");
-        Attack[] mudkip_attacklist = {watergun};
-        this.setAttackList(mudkip_attacklist);
+        Attack[] attacklist = {watergun};
+        this.setAttackList(attacklist);
     }
 }

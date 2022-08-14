@@ -45,7 +45,7 @@ public class SessionHandler {
         System.out.printf("\nPlayer 1 is %s, Player 2 is %s\n", p1.getPlayerName(), p2.getPlayerName());
 
         for (int i = 0; i < numofPokemonInt; i++){
-            System.out.println("\nAvailable Pokemon: Mudkip ");
+            System.out.println("\nAvailable Pokemon: Mudkip Torchick");
             System.out.printf("\n%s please select Pokemon number %d:\n", p1.getPlayerName(), i+1);
             String pokemon_name = scanin.nextLine();
             int added = p1.addPokemonToTeam(pokemon_name, i);
@@ -54,11 +54,12 @@ public class SessionHandler {
                 i--;
                 continue;
             }
+            System.out.println("Pokemon added successfully!");
         }
 
         //adding pokemon to team
         for (int i = 0; i < numofPokemonInt; i++){
-            System.out.println("\nAvailable Pokemon: Mudkip ");
+            System.out.println("\nAvailable Pokemon: Mudkip Torchick");
             System.out.printf("\n%s please select Pokemon number %d:\n", p2.getPlayerName(), i+1);
             String pokemon_name = scanin.nextLine();
             int added = p2.addPokemonToTeam(pokemon_name, i);
@@ -67,22 +68,23 @@ public class SessionHandler {
                 i--;
                 continue;
             }
+            System.out.println("Pokemon added successfully!");
         }
 
         //selecting pokemon for battle
         System.out.println("\nPlayer 1 select Pokemon for battle.");
         p1.PrintPokemonTeam();
         int index = scanin.nextInt();
-        this.p1_pokemon = p1.getPokemonSingle(index-1);
+        this.p1_pokemon = p1.getPokemonSingle(index-1); //adjust index because array starts at 0
 
 
         System.out.println("\nPlayer 2 select Pokemon for battle.");
         p2.PrintPokemonTeam();
         index = scanin.nextInt();
-        this.p2_pokemon = p2.getPokemonSingle(index-1);
+        this.p2_pokemon = p2.getPokemonSingle(index-1); //adjust index because array starts at 0
 
-        System.out.println(p1_pokemon.getName());
-        System.out.println(p2_pokemon.getName());
+        System.out.printf("\n%s chose %s for battle.\n", p1.getPlayerName(), p1_pokemon.getName());
+        System.out.printf("%s chose %s for battle.\n\n", p2.getPlayerName(), p2_pokemon.getName());
 
         this.currentplayer = p1;
         this.enemyplayer = p2;
@@ -94,22 +96,72 @@ public class SessionHandler {
         //While loop where main battle takes place
         while (true){
             //current player chooses action to use
-            System.out.println("Player 1 choose action:\n1. Attack 2.Swap Pokemon");
+            System.out.printf("Player %s choose action:\n1. Attack 2.Swap Pokemon\n", currentplayer.getPlayerName());
             int player_action = scanin.nextInt();
             if (player_action == ATTACK){
                 //choose attack to use
-                System.out.println("Please enter an attack to use.");
+                System.out.println("Please choose an attack to use.");
                 currentpokemon.printAttackList();
                 int selected_attack = scanin.nextInt();
                 selected_attack--;  //adjust index because array starts from 0
                 Attack attack_used = currentpokemon.returnAttackUsed(selected_attack);
 
                 //register attack used and enemy pokemon in battle arena for damage calculation
+                BattleArena ba = new BattleArena(attack_used, enemypokemon);
+                //calculation of damage
+                ba.calculateDamageDealt();
 
+                if (enemypokemon.hp <= 0) {
+                    //check if all pokemon dead
+                    if(this.checkAllDead(enemyplayer) == 1){
+                        System.out.printf("\nCongrats %s!. You win!!!!\n", currentplayer.getPlayerName());
+                        break;
+                    }
+                }
+
+                else{
+                    //continue the game
+                    Player tmp_player;
+                    Pokemon tmp_pokemon;
+
+                    tmp_player = this.enemyplayer;
+                    tmp_pokemon = this.enemypokemon;
+
+                    this.currentplayer = this.enemyplayer;
+                    this.currentpokemon = this.enemypokemon;
+
+                    this.enemyplayer = tmp_player;
+                    this.enemypokemon = tmp_pokemon;
+                }
             }
 
             else if(player_action == SWAP){
                 //swap pokemon being used
+                while (true) {
+                    System.out.println("Please choose an Pokemon to use.");
+                    currentplayer.PrintPokemonTeam();
+                    int swap_ind = scanin.nextInt();
+                    Pokemon newpokemon = currentplayer.getPokemonSingle(swap_ind - 1);
+                    if (newpokemon == currentpokemon){
+                        System.out.println("Current Pokemon is already in use. Please try again.");
+                        continue;
+                    }
+                    currentpokemon = newpokemon;
+                    System.out.printf("%s: Your Pokemon has been swapped to %s\n", currentplayer.getPlayerName(), currentpokemon.getName());
+                    break;
+                }
+                
+                Player tmp_player;
+                Pokemon tmp_pokemon;
+
+                tmp_player = this.enemyplayer;
+                tmp_pokemon = this.enemypokemon;
+
+                this.currentplayer = this.enemyplayer;
+                this.currentpokemon = this.enemypokemon;
+
+                this.enemyplayer = tmp_player;
+                this.enemypokemon = tmp_pokemon;
             }
         }
         //this block should be when the game starts i.e. inside the while(1) loop
@@ -118,7 +170,20 @@ public class SessionHandler {
 
         scanin.close();
     }
-    //TODO: check all dead function
+    private int checkAllDead(Player player){
+        //assume all dead first
+        int alldead = 1;
+        Pokemon[] player_team = player.getPokemonTeam();
+        for (Pokemon poke : player_team){
+            if (poke.hp >= 0){
+                //if any pokemon is alive then change assumption
+                alldead = 0;
+                break;
+            }
+        }
+
+        return alldead;
+    }
 }
 
 
@@ -167,7 +232,12 @@ class Player{
 
     public void PrintPokemonTeam(){
         for (int i = 0; i < this.teampokemons.length; i++) {
-            System.out.printf("%d. %s \n", i+1, this.teampokemons[i].getName());
+            if (this.teampokemons[i].hp>0){
+                System.out.printf("%d. %s \n", i+1, this.teampokemons[i].getName());
+            }
+            else{
+                System.out.printf("%d. %s (DEAD)\n", i+1, this.teampokemons[i].getName());
+            }
         }
     }
 
@@ -175,6 +245,9 @@ class Player{
         switch (pokemon_name){
             case "Mudkip":
                 return new Mudkip();
+
+            case "Torchick":
+                return new Torchick();
 
             default:
                 return null;
@@ -185,19 +258,34 @@ class Player{
 
 /* BattleArena class that pits two Pokemon against each other*/
 class BattleArena {
-    public Pokemon pokemon_under_attack;
-    public Attack attack_being_used;
+    private Pokemon pokemon_under_attack;
+    private Attack attack_being_used;
 
     public BattleArena(Attack attack_being_used, Pokemon pokemon_under_attack){
         this.attack_being_used = attack_being_used;
         this.pokemon_under_attack = pokemon_under_attack;
     }
 
-    //TODO: Attack calculation function and returnDamageModifier helper function
     public void calculateDamageDealt(){
         float damagemodifier = this.returnDamageModifier();
         float damage_given = damagemodifier * attack_being_used.power;
-        pokemon_under_attack.hp -= damage_given;
+        int damage_given_int = (int) damage_given;
+        pokemon_under_attack.hp -= damage_given_int;
+        this.printDamageDealt(attack_being_used, damage_given_int, pokemon_under_attack, damagemodifier);
+    }
+
+    private void printDamageDealt(Attack attack_being_used2, int damage_given, Pokemon pokemon_under_attack, float damagemodifier){
+        if (damagemodifier == 1.0){
+            System.out.printf("%s did %d damage to %s\n", attack_being_used2.name, damage_given, pokemon_under_attack.getName());
+        }
+
+        else if(damagemodifier > 1.0){
+            System.out.printf("%s did %d damage to %s. It was super effective!\n", attack_being_used2.name, damage_given, pokemon_under_attack.getName());
+        }
+
+        else if(damagemodifier > 1.0){
+            System.out.printf("%s did %d damage to %s. It was not very effective!\n", attack_being_used2.name, damage_given, pokemon_under_attack.getName());
+        }
     }
 
     private float returnDamageModifier(){
@@ -224,7 +312,7 @@ class BattleArena {
         }
 
         //Check FIRE attack type against pokemon types
-        if (attack_being_used.type.equals("FIRE")){
+        else if (attack_being_used.type.equals("FIRE")){
             for(int i = 0; i < 2; i++){
                 switch(pokemon_under_attack_types[i]){
                     case "WATER":
@@ -243,7 +331,7 @@ class BattleArena {
         }
 
         //Check GRASS attack type against pokemon types
-        if (attack_being_used.type.equals("GRASS")){
+        else if (attack_being_used.type.equals("GRASS")){
             for(int i = 0; i < 2; i++){
                 switch(pokemon_under_attack_types[i]){
                     case "WATER":

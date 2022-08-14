@@ -51,7 +51,11 @@ abstract class Pokemon{
         return attack_list[user_selection];
     }
 
-    public void takeDamage(float damage){
+    public void takeDamage(int damage){
         this.hp -= damage;
+    }
+
+    public void displayRemainingHP(){
+        System.out.printf("%s has %d HP remaining\n\n", this.name, this.hp);
     }
 }

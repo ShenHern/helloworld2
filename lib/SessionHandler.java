@@ -95,9 +95,21 @@ public class SessionHandler {
         
         //While loop where main battle takes place
         while (true){
-            //current player chooses action to use
-            System.out.printf("Player %s choose action:\n1. Attack 2.Swap Pokemon\n", currentplayer.getPlayerName());
-            int player_action = scanin.nextInt();
+            int player_action = 0;
+            //if current pokemon is dead ask player to swap it out
+            if (currentpokemon.hp<=0){
+                System.out.printf("Player %s please swap out current pokemon\n", currentplayer.getPlayerName());
+                player_action = SWAP;
+            }
+
+            //else current player chooses action to use
+            else{
+                System.out.printf("Player %s choose action:\n1. Attack 2.Swap Pokemon\n", currentplayer.getPlayerName());
+                player_action = scanin.nextInt();
+            }
+            
+
+            /* Player chose ATTACK */
             if (player_action == ATTACK){
                 //choose attack to use
                 System.out.println("Please choose an attack to use.");
@@ -111,12 +123,10 @@ public class SessionHandler {
                 //calculation of damage
                 ba.calculateDamageDealt();
 
-                if (enemypokemon.hp <= 0) {
-                    //check if all pokemon dead
-                    if(this.checkAllDead(enemyplayer) == 1){
-                        System.out.printf("\nCongrats %s!. You win!!!!\n", currentplayer.getPlayerName());
-                        break;
-                    }
+                //check if all pokemon dead
+                if(this.checkAllDead(enemyplayer) == 1){
+                    System.out.printf("\nCongrats %s!. You win!!!!\n", currentplayer.getPlayerName());
+                    break;
                 }
 
                 else{
@@ -124,8 +134,8 @@ public class SessionHandler {
                     Player tmp_player;
                     Pokemon tmp_pokemon;
 
-                    tmp_player = this.enemyplayer;
-                    tmp_pokemon = this.enemypokemon;
+                    tmp_player = this.currentplayer;
+                    tmp_pokemon = this.currentpokemon;
 
                     this.currentplayer = this.enemyplayer;
                     this.currentpokemon = this.enemypokemon;
@@ -135,6 +145,7 @@ public class SessionHandler {
                 }
             }
 
+            /* Player chose SWAP */
             else if(player_action == SWAP){
                 //swap pokemon being used
                 while (true) {
@@ -142,9 +153,14 @@ public class SessionHandler {
                     currentplayer.PrintPokemonTeam();
                     int swap_ind = scanin.nextInt();
                     Pokemon newpokemon = currentplayer.getPokemonSingle(swap_ind - 1);
-                    if (newpokemon == currentpokemon){
+                    if (newpokemon == currentpokemon && currentplayer.getPokemonTeam().length>1){
                         System.out.println("Current Pokemon is already in use. Please try again.");
                         continue;
+                    }
+
+                    else if (newpokemon == currentpokemon && currentplayer.getPokemonTeam().length<=1){
+                        System.out.println("No other Pokemon to swap to\n");
+                        break;
                     }
                     currentpokemon = newpokemon;
                     System.out.printf("%s: Your Pokemon has been swapped to %s\n", currentplayer.getPlayerName(), currentpokemon.getName());
@@ -154,8 +170,8 @@ public class SessionHandler {
                 Player tmp_player;
                 Pokemon tmp_pokemon;
 
-                tmp_player = this.enemyplayer;
-                tmp_pokemon = this.enemypokemon;
+                tmp_player = this.currentplayer;
+                tmp_pokemon = this.currentpokemon;
 
                 this.currentplayer = this.enemyplayer;
                 this.currentpokemon = this.enemypokemon;
@@ -270,22 +286,24 @@ class BattleArena {
         float damagemodifier = this.returnDamageModifier();
         float damage_given = damagemodifier * attack_being_used.power;
         int damage_given_int = (int) damage_given;
-        pokemon_under_attack.hp -= damage_given_int;
+        pokemon_under_attack.takeDamage(damage_given_int);
         this.printDamageDealt(attack_being_used, damage_given_int, pokemon_under_attack, damagemodifier);
     }
 
     private void printDamageDealt(Attack attack_being_used2, int damage_given, Pokemon pokemon_under_attack, float damagemodifier){
         if (damagemodifier == 1.0){
-            System.out.printf("%s did %d damage to %s\n", attack_being_used2.name, damage_given, pokemon_under_attack.getName());
+            System.out.printf("\n%s did %d damage to %s\n", attack_being_used2.name, damage_given, pokemon_under_attack.getName());
         }
 
         else if(damagemodifier > 1.0){
-            System.out.printf("%s did %d damage to %s. It was super effective!\n", attack_being_used2.name, damage_given, pokemon_under_attack.getName());
+            System.out.printf("\n%s did %d damage to %s. It was super effective!\n", attack_being_used2.name, damage_given, pokemon_under_attack.getName());
         }
 
-        else if(damagemodifier > 1.0){
-            System.out.printf("%s did %d damage to %s. It was not very effective!\n", attack_being_used2.name, damage_given, pokemon_under_attack.getName());
+        else if(damagemodifier < 1.0){
+            System.out.printf("\n%s did %d damage to %s. It was not very effective!\n", attack_being_used2.name, damage_given, pokemon_under_attack.getName());
         }
+
+        pokemon_under_attack.displayRemainingHP();
     }
 
     private float returnDamageModifier(){
@@ -295,18 +313,16 @@ class BattleArena {
         //Check WATER attack type against pokemon types
         if (attack_being_used.type.equals("WATER")){
             for(int i = 0; i < 2; i++){
-                switch(pokemon_under_attack_types[i]){
-                    case "WATER":
-                        retval += 0;
+                if (pokemon_under_attack_types[i].equals("WATER")){
+                    retval += 0;
+                }
 
-                    case "FIRE":
-                        retval += 0.33;
-                        
-                    case "GRASS":
-                        retval -= 0.33;
-                    
-                    default:
-                        break;
+                else if (pokemon_under_attack_types[i].equals("FIRE")){
+                    retval += 0.33;
+                }
+
+                else if (pokemon_under_attack_types[i].equals("GRASS")){
+                    retval -= 0.33;
                 }
             }
         }
@@ -314,18 +330,16 @@ class BattleArena {
         //Check FIRE attack type against pokemon types
         else if (attack_being_used.type.equals("FIRE")){
             for(int i = 0; i < 2; i++){
-                switch(pokemon_under_attack_types[i]){
-                    case "WATER":
-                        retval -= 0.33;
+                if (pokemon_under_attack_types[i].equals("WATER")){
+                    retval -= 0.33;
+                }
 
-                    case "FIRE":
-                        retval += 0;
-                        
-                    case "GRASS":
-                        retval += 0.33;
+                else if (pokemon_under_attack_types[i].equals("FIRE")){
+                    retval += 0.0;
+                }
 
-                    default:
-                        break;
+                else if (pokemon_under_attack_types[i].equals("GRASS")){
+                    retval += 0.33;
                 }
             }
         }
@@ -333,18 +347,16 @@ class BattleArena {
         //Check GRASS attack type against pokemon types
         else if (attack_being_used.type.equals("GRASS")){
             for(int i = 0; i < 2; i++){
-                switch(pokemon_under_attack_types[i]){
-                    case "WATER":
-                        retval += 0.33;
+                if (pokemon_under_attack_types[i].equals("WATER")){
+                    retval += 0.33;
+                }
 
-                    case "FIRE":
-                        retval -= 0.33;
-                        
-                    case "GRASS":
-                        retval += 0;
+                else if (pokemon_under_attack_types[i].equals("FIRE")){
+                    retval -= 0.33;
+                }
 
-                    default:
-                        break;
+                else if (pokemon_under_attack_types[i].equals("GRASS")){
+                    retval += 0.0;
                 }
             }
         }

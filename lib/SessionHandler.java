@@ -45,7 +45,7 @@ public class SessionHandler {
         System.out.printf("\nPlayer 1 is %s, Player 2 is %s\n", p1.getPlayerName(), p2.getPlayerName());
 
         for (int i = 0; i < numofPokemonInt; i++){
-            System.out.println("\nAvailable Pokemon: Mudkip Torchick Treeko");
+            System.out.println("\nAvailable Pokemon: Mudkip Torchick Treeko Perilla");
             System.out.printf("\n%s please select Pokemon number %d:\n", p1.getPlayerName(), i+1);
             String pokemon_name = scanin.nextLine();
             int added = p1.addPokemonToTeam(pokemon_name, i);
@@ -59,7 +59,7 @@ public class SessionHandler {
 
         //adding pokemon to team
         for (int i = 0; i < numofPokemonInt; i++){
-            System.out.println("\nAvailable Pokemon: Mudkip Torchick Treeko");
+            System.out.println("\nAvailable Pokemon: Mudkip Torchick Treeko Perilla");
             System.out.printf("\n%s please select Pokemon number %d:\n", p2.getPlayerName(), i+1);
             String pokemon_name = scanin.nextLine();
             int added = p2.addPokemonToTeam(pokemon_name, i);
@@ -267,6 +267,9 @@ class Player{
 
             case "Treeko":
                 return new Treeko();
+
+            case "Perilla":
+                return new Perilla();
 
             default:
                 return null;

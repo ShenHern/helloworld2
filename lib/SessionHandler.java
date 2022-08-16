@@ -45,7 +45,7 @@ public class SessionHandler {
         System.out.printf("\nPlayer 1 is %s, Player 2 is %s\n", p1.getPlayerName(), p2.getPlayerName());
 
         for (int i = 0; i < numofPokemonInt; i++){
-            System.out.println("\nAvailable Pokemon: Mudkip Torchick");
+            System.out.println("\nAvailable Pokemon: Mudkip Torchick Treeko");
             System.out.printf("\n%s please select Pokemon number %d:\n", p1.getPlayerName(), i+1);
             String pokemon_name = scanin.nextLine();
             int added = p1.addPokemonToTeam(pokemon_name, i);
@@ -59,7 +59,7 @@ public class SessionHandler {
 
         //adding pokemon to team
         for (int i = 0; i < numofPokemonInt; i++){
-            System.out.println("\nAvailable Pokemon: Mudkip Torchick");
+            System.out.println("\nAvailable Pokemon: Mudkip Torchick Treeko");
             System.out.printf("\n%s please select Pokemon number %d:\n", p2.getPlayerName(), i+1);
             String pokemon_name = scanin.nextLine();
             int added = p2.addPokemonToTeam(pokemon_name, i);
@@ -72,13 +72,13 @@ public class SessionHandler {
         }
 
         //selecting pokemon for battle
-        System.out.println("\nPlayer 1 select Pokemon for battle.");
+        System.out.printf("\nPlayer %s select Pokemon for battle.\n", p1.getPlayerName());
         p1.PrintPokemonTeam();
         int index = scanin.nextInt();
         this.p1_pokemon = p1.getPokemonSingle(index-1); //adjust index because array starts at 0
 
 
-        System.out.println("\nPlayer 2 select Pokemon for battle.");
+        System.out.printf("\nPlayer %s select Pokemon for battle.\n", p2.getPlayerName());
         p2.PrintPokemonTeam();
         index = scanin.nextInt();
         this.p2_pokemon = p2.getPokemonSingle(index-1); //adjust index because array starts at 0
@@ -191,7 +191,7 @@ public class SessionHandler {
         int alldead = 1;
         Pokemon[] player_team = player.getPokemonTeam();
         for (Pokemon poke : player_team){
-            if (poke.hp >= 0){
+            if (poke.hp > 0){
                 //if any pokemon is alive then change assumption
                 alldead = 0;
                 break;
@@ -264,6 +264,9 @@ class Player{
 
             case "Torchick":
                 return new Torchick();
+
+            case "Treeko":
+                return new Treeko();
 
             default:
                 return null;

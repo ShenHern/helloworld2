@@ -4,7 +4,7 @@ public class Mudkip extends Pokemon{
     //constructor
     public Mudkip(){
         //set pokemon hp
-        this.hp = 60;
+        this.hp = 30;
         //set pokemon name
         this.setName("Mudkip");
         //set pokemon type

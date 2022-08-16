@@ -4,7 +4,7 @@ public class Torchick extends Pokemon{
     //constructor
     public Torchick(){
         //set pokemon hp
-        this.hp = 50;
+        this.hp = 20;
         //set pokemon name
         this.setName("Torchick");
         //set pokemon type
